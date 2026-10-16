@@ -731,6 +731,10 @@ class WanConnectionsMapCard extends HTMLElement {
     const mapDiv = card.querySelector(".map");
     this._deck = new Deck({
       parent: mapDiv,
+      // luma.gl asks for powerPreference "high-performance". On a Mac that
+      // getContext call returns null, then the retry reads .luma and the globe
+      // never starts. "default" leaves the attribute off.
+      deviceProps: { powerPreference: undefined },
       views: new GlobeView({ id: "globe" }),
       viewState: this._viewState,
       controller: CONTROLLER,
