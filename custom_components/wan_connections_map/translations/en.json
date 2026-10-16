@@ -1,0 +1,38 @@
+{
+  "config": {
+    "abort": {
+      "no_mikrotik": "Add the MikroTik Router integration first."
+    },
+    "step": {
+      "user": {
+        "title": "WAN Connections Map",
+        "data": {
+          "mikrotik_entry": "MikroTik router",
+          "local_prefixes": "Extra local prefixes",
+          "exclude_sources": "Source addresses to ignore",
+          "vpn_entities": "VPN peer entities",
+          "traefik_host": "Traefik SSH host",
+          "traefik_username": "Traefik SSH username",
+          "traefik_password": "Traefik SSH password",
+          "traefik_log": "Traefik access log path"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "WAN Connections Map",
+        "data": {
+          "local_prefixes": "Extra local prefixes",
+          "exclude_sources": "Source addresses to ignore",
+          "vpn_entities": "VPN peer entities",
+          "traefik_host": "Traefik SSH host",
+          "traefik_username": "Traefik SSH username",
+          "traefik_password": "Traefik SSH password",
+          "traefik_log": "Traefik access log path"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+node_modules/
+card/node_modules/
+*.mmdb
+*.mmdb.tmp
+__pycache__/
+*.pyc
