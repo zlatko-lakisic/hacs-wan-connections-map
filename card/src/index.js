@@ -729,12 +729,16 @@ class WanConnectionsMapCard extends HTMLElement {
     this._mountFilters(card.querySelector(".filters"));
 
     const mapDiv = card.querySelector(".map");
-    this._deck = new Deck({
+    let deck;
+    try {
+      deck = new Deck({
       parent: mapDiv,
-      // luma.gl asks for powerPreference "high-performance". On a Mac that
-      // getContext call returns null, then the retry reads .luma and the globe
-      // never starts. "default" leaves the attribute off.
-      deviceProps: { powerPreference: undefined },
+      // Chrome on Mac returns null for preserveDrawingBuffer / high-performance,
+      // then getContext on that same canvas stays null.
+      deviceProps: {
+        powerPreference: undefined,
+        webgl: { preserveDrawingBuffer: false, failIfMajorPerformanceCaveat: false },
+      },
       views: new GlobeView({ id: "globe" }),
       viewState: this._viewState,
       controller: CONTROLLER,
@@ -759,6 +763,15 @@ class WanConnectionsMapCard extends HTMLElement {
       },
       layers: this._baseLayers(),
     });
+    } catch (error) {
+      console.error(error);
+      mapDiv.insertAdjacentHTML(
+        "beforeend",
+        `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;color:#ffb74d;font-size:14px;">Chrome could not start WebGL for the globe. Reload this tab. If it still fails, turn on hardware acceleration in chrome://settings/system.</div>`
+      );
+      return;
+    }
+    this._deck = deck;
 
     const fingers = new Set();
     const touchAction = (grabbed) => {
@@ -1504,6 +1517,21 @@ class WanConnectionsMapCard extends HTMLElement {
   disconnectedCallback() {
     if (this._animFrame) cancelAnimationFrame(this._animFrame);
     this._animFrame = 0;
+    const gl = this._deck && this._deck.device && this._deck.device.gl;
+    try {
+      if (gl) gl.getExtension("WEBGL_lose_context")?.loseContext();
+    } catch (error) {
+      /* context already gone */
+    }
+    try {
+      if (this._deck) this._deck.finalize();
+    } catch (error) {
+      /* already finalized */
+    }
+    this._deck = null;
+    if (this._resize) this._resize.disconnect();
+    this._resize = null;
+    this._built = false;
   }
 }
 
